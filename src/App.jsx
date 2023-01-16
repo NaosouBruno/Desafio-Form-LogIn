@@ -19,6 +19,8 @@ export default function LoginForm() {
     email: "",
     password: "",
   });
+  const [changeValidBtn, setChangeValidBtn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
 
   const handleChange = (event) => {
     const { value, name } = event.target;
@@ -26,14 +28,30 @@ export default function LoginForm() {
       ...logIn,
       [name]: value,
     });
-    console.log(logIn);
+  };
+
+  const submiteLogIn = () => {
+    setErrorMessage(false);
+    setChangeValidBtn(true);
+    login({ email: logIn.email, password: logIn.password })
+      .then(() => {
+        alert("Logado!");
+      })
+      .catch((error) => {
+        setErrorMessage(error);
+      })
+      .finally(() => {
+        setChangeValidBtn(false);
+      });
   };
   return (
     <div className="wrapper">
       <div className="login-form">
         <h1>Login Form 🐞</h1>
         {/* Coloque a mensagem de erro de login na div abaixo. Mostre a div somente se houver uma mensagem de erro. */}
-        <div className="errorMessage"></div>
+        {errorMessage && (
+          <div className="errorMessage">{errorMessage.message}</div>
+        )}
         <div className="row">
           <label htmlFor={"email"}>Email</label>
           <input
@@ -57,7 +75,16 @@ export default function LoginForm() {
         </div>
 
         <div className="button">
-          <button>Login</button>
+          <button
+            disabled={
+              logIn.password.trim().length < 6 ||
+              logIn.email.trim() === "" ||
+              changeValidBtn
+            }
+            onClick={submiteLogIn}
+          >
+            Login
+          </button>
         </div>
       </div>
     </div>
